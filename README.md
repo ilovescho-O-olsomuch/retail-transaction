@@ -1,7 +1,7 @@
 # Retail-transaction
 
 ## 数据集文件格式
-csv格式
+CSV格式
 
 ## 数据结构 Columns:
 1. CustomerID: Unique identifier for each customer. ->顾客的唯一认证

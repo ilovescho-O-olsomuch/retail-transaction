@@ -1,9 +1,9 @@
-# retail-transaction
+# Retail-transaction
 
-## 数据结构
+## 数据集文件格式
 csv格式
 
-## Columns:
+## 数据结构 Columns:
 1. CustomerID: Unique identifier for each customer. ->顾客的唯一认证
 2. ProductID: Unique identifier for each product. ->产品的唯一认证
 3. Quantity: The number of units purchased for a particular product. ->产品购买数量

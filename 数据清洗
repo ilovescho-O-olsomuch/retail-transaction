@@ -1,0 +1,61 @@
+# 数据结构举例
+![数据示例](https://github.com/ilovescho-O-olsomuch/retail-transaction/blob/main/%E6%95%B0%E6%8D%AE%E7%A4%BA%E4%BE%8B.png)
+
+## 数据清洗（针对各个字段）
+1. CustomerID检查重复状况
+2. Price DiscountApplied TotalAmount 做保留两位小数的处理
+3. TransactionDate 仅保留日期部分
+4. StoreLocation 仅保留美国的州单位
+
+## 数据文件导入
+import pandas as pd
+import pymysql
+
+``` python
+# 1. 读取 CSV 文件
+file_path = r"C:\Users\32165\Desktop\retail（csv）.csv"  # CSV 文件路径
+df = pd.read_csv(file_path, delimiter=",")  # 指定逗号分隔
+
+# 2. 连接 MySQL 数据库
+conn = pymysql.connect(
+    host="localhost",  # 你的 MySQL 服务器地址
+    user="root",       # 你的 MySQL 用户名
+    password="yourpassword",  # 你的 MySQL 密码
+    database="yourdb",  # 你的数据库名称
+    charset="utf8mb4"
+)
+cursor = conn.cursor()
+
+# 3. 创建表（如果不存在）
+create_table_query = """
+CREATE TABLE IF NOT EXISTS transactions (
+    CustomerID INT,
+    ProductID VARCHAR(50),
+    Quantity INT,
+    Price DECIMAL(10, 5),
+    TransactionDate DATETIME,
+    PaymentMethod VARCHAR(20),
+    StoreLocation TEXT,
+    ProductCategory VARCHAR(50),
+    DiscountApplied DECIMAL(10, 5),
+    TotalAmount DECIMAL(10, 5)
+);
+"""
+cursor.execute(create_table_query)
+
+# 4. 插入数据
+for _, row in df.iterrows():
+    sql = """
+    INSERT INTO transactions (CustomerID, ProductID, Quantity, Price, TransactionDate, PaymentMethod, StoreLocation, ProductCategory, DiscountApplied, TotalAmount)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """
+    cursor.execute(sql, tuple(row))
+
+# 5. 提交并关闭连接
+conn.commit()
+cursor.close()
+conn.close()
+print("数据导入成功！")
+
+
+

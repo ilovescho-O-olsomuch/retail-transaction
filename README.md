@@ -15,4 +15,8 @@ CSV格式
 9. DiscountApplied(%): Percentage of the discount applied to the product. ->产品的折扣率
 10. TotalAmount: Total amount paid for the transaction. ->总消费额
 
-
+## 数据分析的基本流程
+1. 数据清洗 使用工具：mysql（执行） 和 python(jupyter lab)（检查清洗效果）
+2. 客户分层 依据：RFM 和 K-MEANS 使用工具：jupyter lab的scikit-learn, seaborn库
+3. 进阶分层 ABC 使用工具：jupyter lab 的 numpy库
+4. 数据可视化（客户画像） 使用工具：POWER BI + DAX 公式

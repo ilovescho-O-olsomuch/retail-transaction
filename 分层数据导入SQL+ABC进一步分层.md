@@ -1,5 +1,8 @@
-# RFM分层以及K-Means聚类后的数据导入SQL存储
-``` python
+# RFM 分层及 K-Means 聚类数据导入 SQL 存储
+
+## 1. RFM 分层与 K-Means 聚类数据导入 MySQL
+
+```python
 import pymysql
 import pandas as pd
 
@@ -59,26 +62,35 @@ conn.close()
 print("数据导入完成！")
 ```
 
-## ABC分类
-``` python
+---
+
+## 2. ABC 分类分析
+
+### 2.1 读取数据并确保正确格式
+```python
 import pandas as pd
-``
-### python数据读取，确保customerID识别为字符串而不是数值，并且做好数据转换
-``` python
+
 csv_file = r"C:\Users\32165\Desktop\retail\customer_segments.csv"
 df = pd.read_csv(csv_file, sep=",", dtype={'CustomerID': str})  
 df.columns = df.columns.str.strip()
 df["Monetary"] = df["Monetary"].astype(float)
 ```
-### 个人销售额降序排列，从大到小，并且计算每行的积累销售额，从而达到根据销售额占比对客户进行ABC等级分类的目的
-``` python
+
+### 2.2 计算累积销售额并排序
+```python
 df = df.sort_values(by="Monetary", ascending=False)
 df["Cumulative_Sum"] = df["Monetary"].cumsum()
 df["Cumulative_Percent"] = df["Cumulative_Sum"] / df["Monetary"].sum()
-···
+```
 
-### ABC分类的定义前 70% 的销售额 → A 类客户（最重要） 70% - 90% → B 类客户（次重要） 最后 10% → C 类客户（普通客户）
-``` python
+### 2.3 ABC 分类标准
+ABC 分类用于根据销售额贡献度对客户进行分层，分为 A、B、C 三类：
+
+- **A 类客户**：贡献了前 70% 的销售额，最重要的核心客户。
+- **B 类客户**：贡献 70% - 90% 的销售额，次重要客户。
+- **C 类客户**：贡献最后 10% 的销售额，普通客户。
+
+```python
 def classify_abc(percent):
     if percent <= 0.7:
         return "A类客户"
@@ -86,20 +98,19 @@ def classify_abc(percent):
         return "B类客户"
     else:
         return "C类客户"
-```
 
 df["ABC_Category"] = df["Cumulative_Percent"].apply(classify_abc)
+```
 
-
-### 导出 ABC 分类结果
-``` python
+### 2.4 导出 ABC 分类结果
+```python
 output_file = r"C:\Users\32165\Desktop\retail\abc_classification.csv"
 df.to_csv(output_file, index=False, encoding="utf-8-sig")  
 print(f"ABC 分类结果已导出至：{output_file}")
 ```
 
-### 不去重统计
-``` python
+### 2.5 统计分析（不去重）
+```python
 total_sales = df["Monetary"].sum()
 total_orders = len(df)
 abc_stats = df.groupby("ABC_Category")["Monetary"].agg(["sum", "count"]).rename(columns={"sum": "销售金额", "count": "订单数"})
@@ -107,9 +118,9 @@ abc_stats["销售金额占比"] = (abc_stats["销售金额"] / total_sales * 100
 abc_stats["订单数占比"] = (abc_stats["订单数"] / total_orders * 100).round(2).astype(str) + "%"
 ```
 
-### 去重后统计
-``` python
-df_unique = df.drop_duplicates(subset="CustomerID")  # 按CustomerID去重
+### 2.6 统计分析（去重后按客户统计）
+```python
+df_unique = df.drop_duplicates(subset="CustomerID")  # 按 CustomerID 去重
 total_sales_unique = df_unique["Monetary"].sum()
 total_customers = len(df_unique)
 abc_unique_stats = df_unique.groupby("ABC_Category")["Monetary"].agg(["sum", "count"]).rename(columns={"sum": "销售金额", "count": "客户数"})
@@ -117,12 +128,13 @@ abc_unique_stats["销售金额占比"] = (abc_unique_stats["销售金额"] / tot
 abc_unique_stats["客户数占比"] = (abc_unique_stats["客户数"] / total_customers * 100).round(2).astype(str) + "%"
 ```
 
-### 导出统计数据
-``` python
+### 2.7 导出统计数据
+```python
 stats_output_file = r"C:\Users\32165\Desktop\retail\abc_statistics.csv"
 abc_stats.to_csv(stats_output_file, encoding="utf-8-sig")
 abc_unique_stats.to_csv(stats_output_file, mode="a", encoding="utf-8-sig")  
 print(f"ABC 分类统计已导出至：{stats_output_file}")
 ```
-### 最后的统计结果截图 先不去重后去重数据
+
+### 2.8 统计结果示例
 ![统计结果](https://github.com/ilovescho-O-olsomuch/retail-transaction/blob/main/%E5%90%8C.png)

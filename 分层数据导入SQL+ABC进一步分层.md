@@ -12,7 +12,7 @@ password = "123456"  # MySQL 密码
 database = "retailDB"  # 数据库名称
 table_name = "customer_segments"
 
-csv_file = r"C:\Users\32165\Desktop\retail\customer_segments.csv"
+csv_file = r"C:\Users\32165\Desktop\rfm_result.csv"
 df = pd.read_csv(csv_file, sep=",", dtype=str)  
 
 conn = pymysql.connect(host=host, user=user, password=password, database=database, charset='utf8mb4')
@@ -75,7 +75,7 @@ print("数据导入完成！")
 ```python
 import pandas as pd
 
-csv_file = r"C:\Users\32165\Desktop\retail\customer_segments.csv"
+csv_file = r"C:\Users\32165\Desktop\rfm_result.csv"
 df = pd.read_csv(csv_file, sep=",", dtype={'CustomerID': str})  
 df.columns = df.columns.str.strip()
 df["Monetary"] = df["Monetary"].astype(float)
@@ -141,5 +141,15 @@ abc_unique_stats.to_csv(stats_output_file, mode="a", encoding="utf-8-sig")
 print(f"ABC 分类统计已导出至：{stats_output_file}")
 ```
 
-### 2.8 统计结果示例
-![统计结果](https://github.com/ilovescho-O-olsomuch/retail-transaction/blob/main/%E5%90%8C.png)
+### 2.8 统计结果
+| ABC_Category | 销售金额      | 订单数  | 销售金额占比 | 订单数占比 |
+|-------------|-------------|--------|------------|---------|
+| A类客户    | 19098933.97 | 39355  | 70.00%     | 39.36%  |
+| B类客户    | 5456880.19  | 26009  | 20.00%     | 26.01%  |
+| C类客户    | 2728468.56  | 34636  | 10.00%     | 34.64%  |
+
+| ABC_Category | 销售金额      | 客户数  | 销售金额占比 | 客户数占比 |
+|-------------|-------------|--------|------------|---------|
+| A类客户    | 16857597.35 | 35649  | 67.88%     | 37.44%  |
+| B类客户    | 5275094.77  | 25182  | 21.24%     | 26.45%  |
+| C类客户    | 2700802.53  | 34384  | 10.88%     | 36.11%  |

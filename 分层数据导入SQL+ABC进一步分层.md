@@ -65,6 +65,7 @@ print("数据导入完成！")
 ---
 
 ## 2. ABC 分类分析
+
 ## 选择ABC分类的理由
 1. RFM & K-Means 聚类：按照 客户行为模式（最近购买、购买频率、消费金额）进行分类，识别不同客户群体（如 VIP、流失客户、潜力客户）。
 2. ABC 分类：仅按照 销售金额占比 来划分客户，确保业务重点关注高贡献客户。
@@ -75,7 +76,7 @@ print("数据导入完成！")
 ```python
 import pandas as pd
 
-csv_file = r"C:\Users\32165\Desktop\rfm_result.csv"
+csv_file = r"C:\Users\32165\Desktop\result.csv"
 df = pd.read_csv(csv_file, sep=",", dtype={'CustomerID': str})  
 df.columns = df.columns.str.strip()
 df["Monetary"] = df["Monetary"].astype(float)
@@ -123,12 +124,11 @@ abc_stats["销售金额占比"] = (abc_stats["销售金额"] / total_sales * 100
 abc_stats["订单数占比"] = (abc_stats["订单数"] / total_orders * 100).round(2).astype(str) + "%"
 ```
 
-### 2.6 统计分析（去重后按客户统计）
+### 2.6 统计分析（已去重）
 ```python
-df_unique = df.drop_duplicates(subset="CustomerID")  # 按 CustomerID 去重
-total_sales_unique = df_unique["Monetary"].sum()
-total_customers = len(df_unique)
-abc_unique_stats = df_unique.groupby("ABC_Category")["Monetary"].agg(["sum", "count"]).rename(columns={"sum": "销售金额", "count": "客户数"})
+total_sales_unique = df["Monetary"].sum()
+total_customers = len(df)
+abc_unique_stats = df.groupby("ABC_Category")["Monetary"].agg(["sum", "count"]).rename(columns={"sum": "销售金额", "count": "客户数"})
 abc_unique_stats["销售金额占比"] = (abc_unique_stats["销售金额"] / total_sales_unique * 100).round(2).astype(str) + "%"
 abc_unique_stats["客户数占比"] = (abc_unique_stats["客户数"] / total_customers * 100).round(2).astype(str) + "%"
 ```
@@ -142,14 +142,9 @@ print(f"ABC 分类统计已导出至：{stats_output_file}")
 ```
 
 ### 2.8 统计结果
-| ABC_Category | 销售金额      | 订单数  | 销售金额占比 | 订单数占比 |
-|-------------|-------------|--------|------------|---------|
-| A类客户    | 19098933.97 | 39355  | 70.00%     | 39.36%  |
-| B类客户    | 5456880.19  | 26009  | 20.00%     | 26.01%  |
-| C类客户    | 2728468.56  | 34636  | 10.00%     | 34.64%  |
-
 | ABC_Category | 销售金额      | 客户数  | 销售金额占比 | 客户数占比 |
 |-------------|-------------|--------|------------|---------|
-| A类客户    | 16857597.35 | 35649  | 67.88%     | 37.44%  |
-| B类客户    | 5275094.77  | 25182  | 21.24%     | 26.45%  |
-| C类客户    | 2700802.53  | 34384  | 10.88%     | 36.11%  |
+| A类客户    | 17383236.48 | 37540  | 70.00%     | 39.43%  |
+| B类客户    | 4966869.76  | 24822  | 20.00%     | 26.07%  |
+| C类客户    | 2483388.41  | 32853  | 10.00%     | 34.50%  |
+

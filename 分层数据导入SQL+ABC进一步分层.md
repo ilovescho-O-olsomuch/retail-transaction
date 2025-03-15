@@ -3,63 +3,49 @@
 ## 1. RFM 分层与 K-Means 聚类数据导入 MySQL
 
 ```python
-import pymysql
 import pandas as pd
+import pymysql
+from sqlalchemy import create_engine
 
-host = "localhost"  # MySQL 服务器地址
-user = "root"       # MySQL 用户名
-password = "123456"  # MySQL 密码
-database = "retailDB"  # 数据库名称
-table_name = "customer_segments"
+# 1. 读取 CSV 文件（解决编码问题）
+file_path = r"C:\Users\32165\Desktop\result.csv"
+try:
+    # 尝试常见编码格式，如果失败请手动确认文件编码（如 GBK、ANSI、ISO-8859-1）
+    df = pd.read_csv(file_path, encoding='gbk', engine='python', on_bad_lines='skip')
+except UnicodeDecodeError:
+    df = pd.read_csv(file_path, encoding='ISO-8859-1', engine='python', on_bad_lines='skip')
 
-csv_file = r"C:\Users\32165\Desktop\rfm_result.csv"
-df = pd.read_csv(csv_file, sep=",", dtype=str)  
+# 2. 处理缺失值和数据类型
+df = df.fillna('')  # 将 NaN 替换为空字符串或默认值
+df = df.astype({
+    'CustomerID': str,  # 根据数据库表结构调整类型
+    'Recency': int,
+    'Frequency': int,
+    'Monetary': float,
+    'Cluster': int,
+    'Cluster_Label': str
+})
 
-conn = pymysql.connect(host=host, user=user, password=password, database=database, charset='utf8mb4')
-cursor = conn.cursor()
+# 3. 使用 SQLAlchemy 高效批量插入数据（替代逐行插入）
+# 安装依赖：pip install sqlalchemy
+db_connection_str = 'mysql+pymysql://root:123456@localhost/retailDB?charset=utf8mb4'
+engine = create_engine(db_connection_str)
 
-# 创建表
-create_table_query = f"""
-CREATE TABLE IF NOT EXISTS {table_name} (
-    CustomerID INT PRIMARY KEY,
-    Recency INT,
-    Frequency INT,
-    Monetary DECIMAL(10,2),
-    Cluster INT,
-    Cluster_Label VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
-);
-"""
-cursor.execute(create_table_query)
-
-# 转换数据类型
-df["CustomerID"] = df["CustomerID"].astype(int)
-df["Recency"] = df["Recency"].astype(int)
-df["Frequency"] = df["Frequency"].astype(int)
-df["Monetary"] = df["Monetary"].astype(float)
-df["Cluster"] = df["Cluster"].astype(int)
-
-# 插入数据 SQL 语句
-insert_query = f"""
-INSERT INTO {table_name} (CustomerID, Recency, Frequency, Monetary, Cluster, Cluster_Label)
-VALUES (%s, %s, %s, %s, %s, %s)
-ON DUPLICATE KEY UPDATE 
-    Recency=VALUES(Recency), 
-    Frequency=VALUES(Frequency), 
-    Monetary=VALUES(Monetary), 
-    Cluster=VALUES(Cluster), 
-    Cluster_Label=VALUES(Cluster_Label);
-"""
-
-# 批量插入数据
-data = [tuple(row) for row in df.values]
-cursor.executemany(insert_query, data)
-
-# 提交并关闭连接
-conn.commit()
-cursor.close()
-conn.close()
-
-print("数据导入完成！")
+try:
+    # 直接映射 DataFrame 到数据库表
+    df.to_sql(
+        name='customers',
+        con=engine,
+        if_exists='append',  # 追加模式（避免覆盖）
+        index=False,          # 不插入索引列
+        chunksize=1000       # 分批提交提升性能
+    )
+    print("数据导入完成！")
+except Exception as e:
+    print(f"导入失败: {e}")
+finally:
+    engine.dispose()
+   
 ```
 
 ---

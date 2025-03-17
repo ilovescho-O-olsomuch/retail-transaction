@@ -99,7 +99,9 @@
 7. **客户 ID 计数（按 DiscountApplied）**
 8. **总销售额（按 DiscountApplied）**
 9. **总销售额（按美国各州）**
+    
 ![powerbi报表截图](https://github.com/ilovescho-O-olsomuch/retail-transaction/blob/main/11111.png)
+
 ### **选择的可视化图表**
 
 - **折线图**：用于展示销售额的趋势（时间序列）

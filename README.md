@@ -8,7 +8,7 @@
 
 ### **数据来源**
 
-数据来自 Kaggle，包含零售环境中的交易记录，涉及消费者行为、产品销售情况以及支付方式等信息。
+数据来自 Kaggle，包含零售环境中的交易记录，涉及消费者行为、产品销售情况以及支付方式等信息。[数据集链接](https://www.kaggle.com/datasets/fahadrehman07/retail-transaction-dataset)
 
 数据集包含 10 个关键字段：
 
@@ -99,7 +99,7 @@
 7. **客户 ID 计数（按 DiscountApplied）**
 8. **总销售额（按 DiscountApplied）**
 9. **总销售额（按美国各州）**
-![powerbi报表截图]()
+![powerbi报表截图](https://github.com/ilovescho-O-olsomuch/retail-transaction/blob/main/11111.png)
 ### **选择的可视化图表**
 
 - **折线图**：用于展示销售额的趋势（时间序列）
@@ -132,8 +132,7 @@
 ### **模型优化**
 
 - 进一步优化聚类模型，如引入 DBSCAN、层次聚类进行比较
-- 使用 LTV（Customer Lifetime Value）分析长期价值客户
-
+  
 ### **业务实践优化**
 
 - 设计 A/B 测试，评估不同折扣策略的实际效果

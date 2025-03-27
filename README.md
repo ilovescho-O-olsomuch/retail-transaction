@@ -100,7 +100,7 @@
 8. **总销售额（按 DiscountApplied）**
 9. **总销售额（按美国各州）**
     
-![powerbi报表截图](https://github.com/ilovescho-O-olsomuch/retail-transaction/blob/main/11111.png)
+![powerbi报表截图](https://github.com/ilovescho-O-olsomuch/retail-transaction/blob/main/%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96powerbi.png)
 
 ### **选择的可视化图表**
 
